@@ -13,15 +13,20 @@ import java.util.stream.Collectors;
 
 public class SpanceInvadersApp extends Application {
 
+    public static final String ENEMY = "enemy";
+    public static final String PLAYER = "player";
+    public static final String ENEMY_BULLET = "enemybullet";
+    public static final String PLAYER_BULLET = "playerbullet";
+    public static final String BULLET = "bullet";
+
     private Pane root = new Pane();
     private double time = 0;
-    private Sprite player = new Sprite(300,700,40,40,"player",Color.DARKBLUE);
+    private Sprite player = new Sprite(300,700,40,40, PLAYER,Color.DARKBLUE);
 
     private Parent createContent(){
         root.setPrefSize(600,800);
 
         root.getChildren().add(player);
-//        root.getChildren().add(new Circle(300,300,20, Paint.valueOf("red")));
 
         AnimationTimer timer = new AnimationTimer() {
             @Override
@@ -39,7 +44,8 @@ public class SpanceInvadersApp extends Application {
 
     private void nextLevel() {
         for (int i = 0; i<5;i++){
-            Sprite enemy = new Sprite(90+i*100,150,30,30,"enemy",Color.RED);
+            final int x = 90 + i * 100;
+            Sprite enemy = new Sprite(x,150,30,30, ENEMY,Color.RED);
             root.getChildren().add(enemy);
         }
     }
@@ -55,23 +61,23 @@ public class SpanceInvadersApp extends Application {
 
         getSprites().forEach( s -> {
             switch (s.getType()){
-                case "enemybullet":
+                case ENEMY_BULLET:
                     s.moveDown();
                     if (s.getBoundsInParent().intersects(player.getBoundsInParent())){
                         player.setDead(true);
                         s.setDead(true);
                     }
                     break;
-                case "playerbullet":
+                case PLAYER_BULLET:
                     s.moveUp();
-                    getSprites().stream().filter(e -> e.getType().equals("enemy")).forEach(enemy -> {
+                    getSprites().stream().filter(e -> e.getType().equals(ENEMY)).forEach(enemy -> {
                         if (s.getBoundsInParent().intersects(enemy.getBoundsInParent())) {
                             enemy.setDead(true);
                             s.setDead(true);
                         }
                     });
                     break;
-                case "enemy":
+                case ENEMY:
                     if (time>2){
                         if (Math.random()<0.3){
                             shoot(s);
@@ -96,7 +102,7 @@ public class SpanceInvadersApp extends Application {
 
     private void shoot(Sprite whoShoot) { // character that shoot the bullet
         if (!whoShoot.isDead()) {
-            Sprite bullet = new Sprite((int) whoShoot.getTranslateX() + 20, (int) whoShoot.getTranslateY(), 5, 20, whoShoot.getType() + "bullet", Color.BLACK);
+            Sprite bullet = new Sprite((int) whoShoot.getTranslateX() + 20, (int) whoShoot.getTranslateY(), 5, 20, whoShoot.getType() + BULLET, Color.BLACK);
             root.getChildren().add(bullet);
         }
     }
